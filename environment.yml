@@ -1,0 +1,22 @@
+name: ga-sar-det
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch=1.11.0
+  - torchvision=0.12.0
+  - cudatoolkit=11.3
+  - pip
+  - pip:
+      - ultralytics==8.3.202
+      - opencv-python==4.5.5.64
+      - numpy==1.22.4
+      - pandas==1.4.2
+      - matplotlib==3.5.2
+      - PyYAML==6.0
+      - tqdm==4.64.0
+      - scipy==1.8.1
+      - Pillow==9.1.0
