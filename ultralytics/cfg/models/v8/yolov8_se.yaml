@@ -1,0 +1,49 @@
+# Ultralytics YOLOv8 Lite
+# ringan, stabil, cocok SSDD ship detection
+
+nc: 80
+
+scales:
+  n: [0.33, 0.20, 512]   # lebih kecil dari default yolov8n
+
+# ======================
+# Backbone (Lite)
+# ======================
+backbone:
+  - [-1, 1, Conv, [32, 3, 2]]     # 0-P1/2
+  - [-1, 1, Conv, [64, 3, 2]]     # 1-P2/4
+  - [-1, 2, C2f, [64, True]]
+
+  - [-1, 1, Conv, [128, 3, 2]]    # 3-P3/8
+  - [-1, 4, C2f, [128, True]]
+
+  - [-1, 1, Conv, [256, 3, 2]]    # 5-P4/16
+  - [-1, 4, C2f, [256, True]]
+
+  - [-1, 1, Conv, [512, 3, 2]]    # 7-P5/32
+  - [-1, 2, C2f, [512, True]]
+
+  - [-1, 1, SPPF, [512, 5]]       # 9
+
+# ======================
+# Head (Lite)
+# ======================
+head:
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 6], 1, Concat, [1]]
+  - [-1, 2, C2f, [256]]
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 4], 1, Concat, [1]]
+  - [-1, 2, C2f, [128]]   # P3
+
+  - [-1, 1, Conv, [128, 3, 2]]
+  - [[-1, 12], 1, Concat, [1]]
+  - [-1, 2, C2f, [256]]   # P4
+
+  - [-1, 1, Conv, [256, 3, 2]]
+  - [[-1, 9], 1, Concat, [1]]
+  - [-1, 2, C2f, [512]]   # P5
+
+  - [[15, 18, 21], 1, Detect, [nc]]
