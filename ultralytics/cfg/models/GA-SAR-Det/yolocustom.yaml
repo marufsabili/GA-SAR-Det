@@ -155,7 +155,7 @@ dnn: False
 gradient_clip: 10.0
 
 
-project: 'ga_sar_det_300epochs'
+project: 'ga_sar_det'
 name: 'gasardet_n'
 exist_ok: True
 resume: False
