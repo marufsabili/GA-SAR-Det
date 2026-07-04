@@ -14,143 +14,144 @@ scales:
 
 # ---------------- BACKBONE (UNCHANGED - 6.0 GFLOPs) ----------------
 backbone:
-  - [-1, 1, Conv, [32, 3, 2]]        # 0  -> 256x256
-  - [-1, 1, Conv, [64, 3, 2]]        # 1  -> 128x128
-  - [-1, 2, C3Ghost, [96, 0.4]]      # 2  -> 128x128
-  - [-1, 1, Conv, [128, 3, 2]]       # 3  -> 64x64
-  - [-1, 3, C3Ghost, [256, 0.4]]     # 4  -> 64x64
-  - [-1, 1, SPPF, [256, 5]]          # 5  -> 64x64
-  - [-1, 1, Conv, [256, 3, 2]]       # 6  -> 32x32
-  - [-1, 2, C3Ghost, [512, 0.4]]     # 7  -> 32x32
-  - [-1, 1, Conv, [512, 3, 2]]       # 8  -> 16x16
-  - [-1, 1, C3Ghost, [512, 0.4]]     # 9  -> 16x16
+  - [-1, 1, Conv, [32, 3, 2]] # 0  -> 256x256
+  - [-1, 1, Conv, [64, 3, 2]] # 1  -> 128x128
+  - [-1, 2, C3Ghost, [96, 0.4]] # 2  -> 128x128
+  - [-1, 1, Conv, [128, 3, 2]] # 3  -> 64x64
+  - [-1, 3, C3Ghost, [256, 0.4]] # 4  -> 64x64
+  - [-1, 1, SPPF, [256, 5]] # 5  -> 64x64
+  - [-1, 1, Conv, [256, 3, 2]] # 6  -> 32x32
+  - [-1, 2, C3Ghost, [512, 0.4]] # 7  -> 32x32
+  - [-1, 1, Conv, [512, 3, 2]] # 8  -> 16x16
+  - [-1, 1, C3Ghost, [512, 0.4]] # 9  -> 16x16
 
 # ---------------- HEAD (UNCHANGED - 6.0 GFLOPs) ----------------
 head:
-  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]   # 10 -> 32x32
-  - [[-1, 7], 1, Concat, [1]]                    # 11 -> 32x32
-  - [-1, 2, C3Ghost, [256, 0.4]]                 # 12 -> 32x32
-  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]   # 13 -> 64x64
-  - [[-1, 4], 1, Concat, [1]]                    # 14 -> 64x64
-  - [-1, 1, C3Ghost, [128, 0.4]]                 # 15 -> 64x64
-  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]   # 16 -> 128x128
-  - [[-1, 2], 1, Concat, [1]]                    # 17 -> 128x128
-  - [-1, 1, C3Ghost, [96, 0.4]]                  # 18 -> 128x128
-  - [-1, 1, Conv, [96, 3, 2]]                    # 19 -> 64x64
-  - [[-1, 15], 1, Concat, [1]]                   # 20 -> 64x64
-  - [-1, 1, C3Ghost, [128, 0.4]]                 # 21 -> 64x64
-  - [-1, 1, Conv, [128, 3, 2]]                   # 22 -> 32x32
-  - [[-1, 12], 1, Concat, [1]]                   # 23 -> 32x32
-  - [-1, 1, C3Ghost, [256, 0.4]]                 # 24 -> 32x32
-  - [-1, 1, Conv, [256, 3, 2]]                   # 25 -> 16x16
-  - [[-1, 9], 1, Concat, [1]]                    # 26 -> 16x16
-  - [-1, 1, C3Ghost, [512, 0.4]]                 # 27 -> 16x16
-  - [[18, 21, 24, 27], 1, Detect, [nc]]          # 28 (P2, P3, P4, P5)
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 10 -> 32x32
+  - [[-1, 7], 1, Concat, [1]] # 11 -> 32x32
+  - [-1, 2, C3Ghost, [256, 0.4]] # 12 -> 32x32
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 13 -> 64x64
+  - [[-1, 4], 1, Concat, [1]] # 14 -> 64x64
+  - [-1, 1, C3Ghost, [128, 0.4]] # 15 -> 64x64
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 16 -> 128x128
+  - [[-1, 2], 1, Concat, [1]] # 17 -> 128x128
+  - [-1, 1, C3Ghost, [96, 0.4]] # 18 -> 128x128
+  - [-1, 1, Conv, [96, 3, 2]] # 19 -> 64x64
+  - [[-1, 15], 1, Concat, [1]] # 20 -> 64x64
+  - [-1, 1, C3Ghost, [128, 0.4]] # 21 -> 64x64
+  - [-1, 1, Conv, [128, 3, 2]] # 22 -> 32x32
+  - [[-1, 12], 1, Concat, [1]] # 23 -> 32x32
+  - [-1, 1, C3Ghost, [256, 0.4]] # 24 -> 32x32
+  - [-1, 1, Conv, [256, 3, 2]] # 25 -> 16x16
+  - [[-1, 9], 1, Concat, [1]] # 26 -> 16x16
+  - [-1, 1, C3Ghost, [512, 0.4]] # 27 -> 16x16
+  - [[18, 21, 24, 27], 1, Detect, [nc]] # 28 (P2, P3, P4, P5)
 
 # =====================================================
 # 🎯 MAXIMUM mAP OPTIMIZATION (NO GFLOPs CHANGE!)
 # =====================================================
 
-epochs: 300  # ⚡ Standard 300 epochs
+epochs: 300 # ⚡ Standard 300 epochs
 
 # ========== PRECISION-FOCUSED AUGMENTATION ==========
 # Reduced augmentation = better feature learning
-mosaic: 0.8              # ⚡ Lower (was 1.0) - less distortion
-mixup: 0.1               # ⚡ Lower (was 0.2) - preserve ship features
-copy_paste: 0.3          # ⚡ Lower (was 0.6) - less synthetic data
-degrees: 15.0            # ⚡ Lower (was 30.0) - less rotation
-translate: 0.05          # ⚡ Lower (was 0.1) - keep ships centered
-scale: 0.3               # ⚡ Lower (was 0.5) - less scale variation
-shear: 2.0               # ⚡ Lower (was 5.0) - less distortion
-perspective: 0.00001     # ⚡ Minimal perspective
-flipud: 0.5              
-fliplr: 0.5              
-hsv_h: 0.010             # ⚡ Lower (was 0.015) - less color shift
-hsv_s: 0.5               # ⚡ Lower (was 0.7)
-hsv_v: 0.3               # ⚡ Lower (was 0.4)
-erasing: 0.1             # ⚡ Lower (was 0.2) - less data loss
-auto_augment: 'randaugment'
+mosaic: 0.8 # ⚡ Lower (was 1.0) - less distortion
+mixup: 0.1 # ⚡ Lower (was 0.2) - preserve ship features
+copy_paste: 0.3 # ⚡ Lower (was 0.6) - less synthetic data
+degrees: 15.0 # ⚡ Lower (was 30.0) - less rotation
+translate: 0.05 # ⚡ Lower (was 0.1) - keep ships centered
+scale: 0.3 # ⚡ Lower (was 0.5) - less scale variation
+shear: 2.0 # ⚡ Lower (was 5.0) - less distortion
+perspective: 0.00001 # ⚡ Minimal perspective
+flipud: 0.5
+fliplr: 0.5
+hsv_h: 0.010 # ⚡ Lower (was 0.015) - less color shift
+hsv_s: 0.5 # ⚡ Lower (was 0.7)
+hsv_v: 0.3 # ⚡ Lower (was 0.4)
+erasing: 0.1 # ⚡ Lower (was 0.2) - less data loss
+auto_augment: "randaugment"
 augment: True
 
 # ========== CRITICAL: EARLY MOSAIC CLOSE ==========
-close_mosaic: 40         # ⚡ Close at epoch 260 (300-40=260)
-                         # Last 40 epochs = pure fine-tuning!
-                         # Maximum fine-tuning time dalam 300 epochs
+close_mosaic:
+  40 # ⚡ Close at epoch 260 (300-40=260)
+  # Last 40 epochs = pure fine-tuning!
+  # Maximum fine-tuning time dalam 300 epochs
 
 # ========== OPTIMIZED LOSS FOR MAXIMUM mAP ==========
-box: 8.0                 # ⚡ Higher (was 7.5) - better localization
-cls: 0.3                 # ⚡ Lower (was 0.5) - single class needs less
-dfl: 1.8                 # ⚡ Higher (was 1.5) - better distribution
-anchor_t: 4.5            # ⚡ Higher (was 4.0) - stricter matching
-fl_gamma: 2.0            # ⚡ Higher (was 1.5) - focus on hard cases
-iou_t: 0.25              # ⚡ Higher (was 0.20) - stricter IoU
-label_smoothing: 0.0     
+box: 8.0 # ⚡ Higher (was 7.5) - better localization
+cls: 0.3 # ⚡ Lower (was 0.5) - single class needs less
+dfl: 1.8 # ⚡ Higher (was 1.5) - better distribution
+anchor_t: 4.5 # ⚡ Higher (was 4.0) - stricter matching
+fl_gamma: 2.0 # ⚡ Higher (was 1.5) - focus on hard cases
+iou_t: 0.25 # ⚡ Higher (was 0.20) - stricter IoU
+label_smoothing: 0.0
 
 # Loss gains (precision-focused)
-bbox_loss_gain: 1.2      # ⚡ Higher (was 1.0)
-cls_loss_gain: 0.3       # ⚡ Lower (was 0.5)
-obj_loss_gain: 1.0       
+bbox_loss_gain: 1.2 # ⚡ Higher (was 1.0)
+cls_loss_gain: 0.3 # ⚡ Lower (was 0.5)
+obj_loss_gain: 1.0
 
-ciou: True               
-diou: False              
-focal: True              
-smooth: False            
+ciou: True
+diou: False
+focal: True
+smooth: False
 
 # ========== OPTIMAL LEARNING RATE SCHEDULE ==========
-lr0: 0.008               # ⚡ Slightly lower (was 0.01) - more stable
-lrf: 0.005               # ⚡ Lower (was 0.01) - better convergence
-momentum: 0.940          # ⚡ Higher (was 0.937) - more smoothing
-weight_decay: 0.0003     # ⚡ Lower (was 0.0005) - less regularization
-warmup_epochs: 5.0       # ⚡ Longer (was 3.0) - smoother start
-warmup_momentum: 0.8     
-warmup_bias_lr: 0.1      
+lr0: 0.008 # ⚡ Slightly lower (was 0.01) - more stable
+lrf: 0.005 # ⚡ Lower (was 0.01) - better convergence
+momentum: 0.940 # ⚡ Higher (was 0.937) - more smoothing
+weight_decay: 0.0003 # ⚡ Lower (was 0.0005) - less regularization
+warmup_epochs: 5.0 # ⚡ Longer (was 3.0) - smoother start
+warmup_momentum: 0.8
+warmup_bias_lr: 0.1
 
-optimizer: 'AdamW'
-scheduler: 'cosine'      
+optimizer: "AdamW"
+scheduler: "cosine"
 cos_lr: True
-min_lr: 0.00005          # ⚡ Lower (was 0.0001) - finer adjustments
+min_lr: 0.00005 # ⚡ Lower (was 0.0001) - finer adjustments
 
 # ========== DROPOUT & EMA (STABILITY) ==========
-dropout: 0.0             
-ema_decay: 0.9999        # ⚡ Higher (was 0.9998) - more stable
-ema_updates: 2000        
-ema_decay_fn: 'exp'
+dropout: 0.0
+ema_decay: 0.9999 # ⚡ Higher (was 0.9998) - more stable
+ema_updates: 2000
+ema_decay_fn: "exp"
 
 # ========== TASK ALIGNED ASSIGNMENT ==========
 loss_ota: True
-simota_epochs: 150       # ⚡ Extended (was 100)
-tal_topk: 12             # ⚡ Higher (was 10) - more candidates
-tal_alpha: 0.6           # ⚡ Higher (was 0.5) - stronger class weight
-tal_beta: 6.5            # ⚡ Higher (was 6.0) - stricter IoU weight
+simota_epochs: 150 # ⚡ Extended (was 100)
+tal_topk: 12 # ⚡ Higher (was 10) - more candidates
+tal_alpha: 0.6 # ⚡ Higher (was 0.5) - stronger class weight
+tal_beta: 6.5 # ⚡ Higher (was 6.0) - stricter IoU weight
 
 # ========== MULTI-SCALE (CONTROLLED) ==========
 progressive_resize: False
 multiscale: True
-multiscale_low: 0.95     # ⚡ Narrower (was 0.9) - more stable
-multiscale_high: 1.05    # ⚡ Narrower (was 1.1)
+multiscale_low: 0.95 # ⚡ Narrower (was 0.9) - more stable
+multiscale_high: 1.05 # ⚡ Narrower (was 1.1)
 
 # ========== INFERENCE SETTINGS (PRECISION) ==========
-conf: 0.0005             # ⚡ Lower (was 0.001) - catch more detections
-iou: 0.50                # ⚡ Higher (was 0.45) - stricter NMS
-max_det: 1500            
+conf: 0.0005 # ⚡ Lower (was 0.001) - catch more detections
+iou: 0.50 # ⚡ Higher (was 0.45) - stricter NMS
+max_det: 1500
 agnostic_nms: False
-amp: True                
+amp: True
 
 # ========== TRAINING PARAMETERS ==========
-batch: 16                
+batch: 16
 workers: 8
-imgsz: 720               
+imgsz: 720
 device: 0
 single_cls: True
 
 # ========== VALIDATION & MONITORING ==========
 val: True
-val_period: 1            
-save_period: 5           
+val_period: 1
+save_period: 5
 save_best: True
 save_last: True
-patience: 80             # ⚡ Cukup untuk 300 epochs
-metric: 'mAP50-95'       
+patience: 80 # ⚡ Cukup untuk 300 epochs
+metric: "mAP50-95"
 
 plots: True
 verbose: True
@@ -163,32 +164,31 @@ save_crop: False
 sync_bn: True
 freeze: []
 pretrained: True
-deterministic: True      # ⚡ Deterministic for reproducibility
+deterministic: True # ⚡ Deterministic for reproducibility
 cudnn_benchmark: True
 pin_memory: True
 persistent_workers: True
 half: False
 dnn: False
-gradient_clip: 8.0       # ⚡ Lower (was 10.0) - prevent gradient explosion
+gradient_clip: 8.0 # ⚡ Lower (was 10.0) - prevent gradient explosion
 
 # ========== PROJECT SETUP ==========
-project: 'ssdd_map_boost'
-name: 'yolov12n_v2'
+project: "ssdd_map_boost"
+name: "yolov12n_v2"
 exist_ok: True
-resume: False            
+resume: False
 profile: False
 
 # ========== ADDITIONAL SETTINGS ==========
 rect: False
 overlap_mask: True
 mask_ratio: 4
-seed: 42                 # ⚡ Fixed seed for reproducibility
+seed: 42 # ⚡ Fixed seed for reproducibility
 fraction: 1.0
-
 # =====================================================
 # 🎯 MAP BOOST STRATEGY (6.0 GFLOPs MAINTAINED!)
 # =====================================================
-# 
+#
 # Current: mAP50 = 0.985, mAP50-95 = 0.711
 # Target:  mAP50 = 0.990+, mAP50-95 = 0.730+
 #
@@ -244,7 +244,7 @@ fraction: 1.0
 # =====================================================
 # 📊 KEY DIFFERENCES FROM ORIGINAL CONFIG:
 # =====================================================
-# 
+#
 # Augmentation (Reduced for precision):
 #   mosaic: 1.0 → 0.8
 #   mixup: 0.2 → 0.1
@@ -282,7 +282,7 @@ fraction: 1.0
 # from ultralytics import YOLO
 #
 # model = YOLO("yolov12n.yaml")
-# 
+#
 # results = model.train(
 #     data="ssdd.yaml",
 #     epochs=300,
