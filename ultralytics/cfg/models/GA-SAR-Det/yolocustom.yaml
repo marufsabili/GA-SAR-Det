@@ -1,0 +1,169 @@
+nc: 1
+
+scales:
+  n: [0.50, 0.25, 512]
+  s: [0.65, 0.65, 512]
+  m: [0.80, 0.90, 512]
+  l: [1.15, 1.15, 512]
+  x: [1.15, 1.40, 512]
+
+
+backbone:
+  - [-1, 1, Conv, [32, 3, 2]]                    
+  - [-1, 1, Conv, [64, 3, 2]]                     
+  - [-1, 2, C3Ghost, [64, 0.5]]                   
+  - [-1, 1, Conv, [96, 3, 2]]                     
+  - [-1, 3, C3Ghost, [96, 0.5]]                   
+  - [-1, 1, Conv, [160, 3, 2]]                    
+  - [-1, 3, C3Ghost, [160, 0.5]]                 
+  - [-1, 1, Conv, [256, 3, 2]]                    
+  - [-1, 2, C3Ghost, [256, 0.5]]                  
+  - [-1, 1, SPPF, [256, 5]]                       
+  - [-1, 1, Conv, [416, 3, 2]]                    
+  - [-1, 1, C3Ghost, [416, 0.75]]                 
+
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    
+  - [[-1, 9], 1, Concat, [1]]                     
+  - [-1, 2, C3Ghost, [256, 0.5]]                  
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    
+  - [[-1, 6], 1, Concat, [1]]                     
+  - [-1, 2, C3Ghost, [160, 0.5]]                  
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    
+  - [[-1, 4], 1, Concat, [1]]                     
+  - [-1, 2, C3Ghost, [96, 0.5]]                   
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    
+  - [[-1, 2], 1, Concat, [1]]                     
+  - [-1, 1, C3Ghost, [64, 0.5]]                   
+
+  - [-1, 1, Conv, [64, 3, 2]]                    
+  - [[-1, 20], 1, Concat, [1]]                    
+  - [-1, 2, C3Ghost, [96, 0.5]]                  
+
+  - [-1, 1, Conv, [96, 3, 2]]                    
+  - [[-1, 17], 1, Concat, [1]]                    
+  - [-1, 2, C3Ghost, [160, 0.5]]                  
+
+  - [-1, 1, Conv, [160, 3, 2]]                    
+  - [[-1, 14], 1, Concat, [1]]                    
+  - [-1, 1, C3Ghost, [256, 0.75]]                
+
+  - [[23, 26, 29, 32], 1, Detect, [nc]]           
+
+
+mosaic: 1.0
+copy_paste: 0.6
+degrees: 30.0
+translate: 0.1
+scale: 0.5
+shear: 5.0
+perspective: 0.0001
+flipud: 0.5
+fliplr: 0.5
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+erasing: 0.2
+auto_augment: 'randaugment'
+augment: True
+close_mosaic: 30
+box: 7.5
+cls: 0.5
+dfl: 1.5
+anchor_t: 4.0
+fl_gamma: 1.5
+iou_t: 0.20
+label_smoothing: 0.0
+
+bbox_loss_gain: 1.0
+cls_loss_gain: 0.5
+obj_loss_gain: 1.0
+
+ciou: False
+diou: False
+piou: True         
+focal: True
+smooth: False
+
+lr0: 0.01
+lrf: 0.01
+momentum: 0.937
+weight_decay: 0.0005
+warmup_epochs: 3.0
+warmup_momentum: 0.8
+warmup_bias_lr: 0.1
+
+
+optimizer: 'AdamW'
+scheduler: 'cosine'
+cos_lr: True
+min_lr: 0.0001
+
+
+dropout: 0.0
+ema_decay: 0.9998
+ema_updates: 2000
+ema_decay_fn: 'exp'
+
+loss_ota: True
+simota_epochs: 100
+tal_topk: 10
+tal_alpha: 0.5
+tal_beta: 6.0
+
+progressive_resize: False
+multiscale: True
+multiscale_low: 0.9
+multiscale_high: 1.1
+
+conf: 0.001
+iou: 0.45
+max_det: 1500
+agnostic_nms: False
+amp: True
+
+batch: 16
+workers: 8
+imgsz: 720
+device: 0
+single_cls: True
+
+val: True
+val_period: 1
+save_period: 5
+save_best: True
+save_last: True
+patience: 50
+metric: 'mAP50-95'
+
+plots: True
+verbose: True
+save_json: True
+save_hybrid: True
+save_conf: True
+save_crop: False
+
+sync_bn: True
+freeze: []
+pretrained: True
+deterministic: False
+cudnn_benchmark: True
+pin_memory: True
+persistent_workers: True
+half: False
+dnn: False
+gradient_clip: 10.0
+
+
+project: 'ga_sar_det_300epochs'
+name: 'gasardet_n'
+exist_ok: True
+resume: False
+profile: False
+
+
+rect: False
+overlap_mask: True
+mask_ratio: 4
+seed: 0
+fraction: 1.0
